@@ -1,6 +1,10 @@
 
-import { describe, it, expect } from
+import { describe, it, expect, vi } from
     "vitest";
+
+import axios from 'axios';
+vi.mock('axios');
+
 import App, {
     storiesReducer,
     Item,
@@ -56,6 +60,71 @@ describe('Item'
         it('renders all properties'
             , () => {
                 render(<Item item={storyOne} />);
+                expect(screen.getByText('Jordan Walke')).toBeInTheDocument();
+                expect(screen.getByText('React')).toHaveAttribute(
+                    'href'
+                    ,
+                    'https://reactjs.org/'
+                );
+            });
+    });
+
+describe('Item'
+    , () => {
+        it('clicking the dismiss button calls the callback handler'
+            , () => {
+                const handleRemoveItem = vi.fn();
+                render(<Item item={storyOne} onRemoveItem={handleRemoveItem} />);
+                fireEvent.click(screen.getByRole('button'));
+                expect(handleRemoveItem).toHaveBeenCalledTimes(1);
+            });
+    });
+
+
+
+// describe('SearchForm'
+//     , () => {
+//         it('renders the input field with its value'
+//             , () => {
+//                 render(<SearchForm {...searchFormProps} />);
+//                 expect(screen.getByDisplayValue('React')).toBeInTheDocument();
+//             });
+//         it('renders the correct label'
+//             , () => {
+//                 render(<SearchForm {...searchFormProps} />);
+//                 expect(screen.getByLabelText(/Search/)).toBeInTheDocument();
+//             });
+//         it('calls onSearchInput on input field change'
+//             , () => {
+//                 render(<SearchForm {...searchFormProps} />);
+//                 fireEvent.change(screen.getByDisplayValue('React'), {
+//                     target: { value: 'Redux' },
+//                 });
+//                 expect(searchFormProps.onSearchInput).toHaveBeenCalledTimes(1);
+//             });
+//         it('calls onSearchSubmit on button submit click'
+//             , () => {
+//                 render(<SearchForm {...searchFormProps} />);
+//                 fireEvent.submit(screen.getByRole('button'));
+//                 expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
+//             });
+
+
+//     });
+
+
+
+describe('App'
+    , () => {
+        it('succeeds fetching data'
+            , () => {
+                const promise = Promise.resolve({
+                    data: {
+                        hits: stories,
+                    },
+                });
+                axios.get.mockImplementationOnce(() => promise);
+                render(<App />);
                 screen.debug();
             });
     });
