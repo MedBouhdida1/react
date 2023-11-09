@@ -33,6 +33,9 @@ const storyTwo = {
     objectID: 1,
 };
 
+const stories = [storyOne, storyTwo];
+
+
 describe('storiesReducer', () => {
     it('removes a story from all stories', () => {
         const action = { type: 'REMOVE_STORY', payload: storyOne };
