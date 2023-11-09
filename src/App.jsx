@@ -36,12 +36,20 @@ const storiesReducer = (state, action) => {
 };
 
 const useStorageState = (key, initialState) => {
+  const isMounted = React.useRef(false);
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState,
   );
 
+
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      console.log("a")
+      localStorage.setItem(key, value);
+
+    }
   }, [value, key]);
 
   return [value, setValue];
