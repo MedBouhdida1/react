@@ -2,6 +2,8 @@ import * as React from "react";
 import axios from "axios";
 import './App.css'
 import styled from 'styled-components'
+import _ from 'lodash';
+
 const storiesReducer = (state, action) => {
   switch (action.type) {
     case "STORIES_FETCH_INIT":
@@ -184,13 +186,61 @@ const InputWithLabel = ({
   );
 };
 
-const List = ({ list, onRemoveItem }) => (
-  <ul>
-    {list.map((item) => (
-      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
-    ))}
-  </ul>
-);
+const List = ({ list, onRemoveItem }) => {
+  const [sortedList, setSortedList] = React.useState(list);
+  const [sortOrder, setSortOrder] = React.useState({
+    title: 'asc',
+    author: 'asc',
+    num_comments: 'asc',
+    points: 'asc',
+  });
+
+  const handleSort = (columnName) => {
+    const order = sortOrder[columnName] === 'asc' ? 'desc' : 'asc';
+
+    const sorted = _.orderBy(sortedList, [columnName], [order]);
+
+    setSortedList(sorted);
+    setSortOrder({ ...sortOrder, [columnName]: order });
+  };
+  return (
+    <div>
+      <ul>
+        <StyledItem>
+          <StyledColumn width="40%">
+            <StyledButtonLarge type="button" onClick={() => handleSort('title')}>
+              Title
+            </StyledButtonLarge>
+          </StyledColumn>
+          <StyledColumn width="30%">
+            <StyledButtonLarge type="button" onClick={() => handleSort('author')}>
+              Author
+            </StyledButtonLarge>
+          </StyledColumn>
+          <StyledColumn width="10%">
+            <StyledButtonLarge type="button" onClick={() => handleSort('num_comments')}>
+              Num comments
+            </StyledButtonLarge>
+          </StyledColumn>
+          <StyledColumn width="10%">
+            <StyledButtonLarge type="button" onClick={() => handleSort('points')}>
+              Points
+            </StyledButtonLarge>
+          </StyledColumn>
+
+        </StyledItem>
+      </ul>
+
+      <ul>
+        {sortedList.map((item) => (
+          <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+
 
 
 
