@@ -112,19 +112,25 @@ describe('Item'
 
 //     });
 
-
-
-describe('App'
-    , () => {
-        it('succeeds fetching data'
-            , () => {
-                const promise = Promise.resolve({
-                    data: {
-                        hits: stories,
-                    },
-                });
-                axios.get.mockImplementationOnce(() => promise);
-                render(<App />);
-                screen.debug();
-            });
+describe('App', () => {
+    it('succeeds fetching data', async () => {
+        const promise = Promise.resolve({
+            data: {
+                hits: stories,
+            },
+        });
+        axios.get.mockImplementationOnce(() => promise);
+        render(<App />);
+        expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+        await waitFor(async () => await promise);
+        expect(screen.queryByText(/Loading/)).toBeNull();
     });
+});
+
+
+describe('App', () => {
+    it('renders snapshot', () => {
+        const { container } = render(<App />);
+        expect(container.firstChild).toMatchSnapshot();
+    });
+});

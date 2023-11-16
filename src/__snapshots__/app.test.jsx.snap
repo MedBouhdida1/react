@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`App > renders snapshot 1`] = `
+<div
+  class="sc-bdnyFh dqOgvV"
+>
+  <h1
+    class="sc-gtsqUy fAvIfL"
+  >
+    My Hacker Stories
+  </h1>
+  <form
+    class="sc-iCoHzw ePoMYe"
+  >
+    <label
+      class="sc-fujznN kAtonv"
+      for="search"
+    >
+      <strong>
+        Search:
+      </strong>
+    </label>
+     
+    <input
+      class="sc-pNWRh iIPiXe"
+      id="search"
+      type="text"
+      value="React"
+    />
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
+  <hr />
+  <p>
+    Loading ...
+  </p>
+</div>
+`;

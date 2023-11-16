@@ -99,9 +99,13 @@ const App = () => {
     });
   };
 
+
+
   const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
+
+
 
   const handleSearchSubmit = (event) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
@@ -187,6 +191,9 @@ const List = ({ list, onRemoveItem }) => (
     ))}
   </ul>
 );
+
+
+
 const StyledContainer = styled.div`
       height: 100vw;
       padding: 20px;
