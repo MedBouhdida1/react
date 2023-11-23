@@ -64,6 +64,9 @@ const App = () => {
 
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
 
+  const [urls, setUrls] = React.useState([]);
+
+
   const [stories, dispatchStories] = React.useReducer(storiesReducer, {
     data: [],
     isLoading: false,
@@ -110,9 +113,15 @@ const App = () => {
 
 
   const handleSearchSubmit = (event) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
-
     event.preventDefault();
+    const newUrl = `${API_ENDPOINT}${searchTerm}`;
+
+    setUrls(oldUrls => {
+      const filteredUrls = oldUrls.filter(url => url !== newUrl);
+      return [newUrl, ...filteredUrls].slice(0, 5);
+    });
+
+    setUrl(newUrl);
   };
 
   return (
@@ -124,6 +133,7 @@ const App = () => {
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
+      <SearchHistoryButtons urls={urls} setUrl={setUrl} />
 
       <hr />
 
@@ -137,7 +147,21 @@ const App = () => {
     </StyledContainer>
   );
 };
+const SearchHistoryButtons = ({ urls, setUrl }) => {
+  const handleClick = (url) => {
+    setUrl(url);
+  };
 
+  return (
+    <div>
+      {urls.map((url, index) => (
+        <button key={index} onClick={() => handleClick(url)}>
+          {url.split('?query=')[1]}
+        </button>
+      ))}
+    </div>
+  );
+};
 const SearchForm = ({ searchTerm, onSearchInput, onSearchSubmit }) => (
   <StyledSearchForm onSubmit={onSearchSubmit}>
     <InputWithLabel
@@ -239,11 +263,6 @@ const List = ({ list, onRemoveItem }) => {
     </div>
   );
 };
-
-
-
-
-
 const StyledContainer = styled.div`
       height: 100vw;
       padding: 20px;
