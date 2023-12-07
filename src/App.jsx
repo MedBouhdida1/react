@@ -36,21 +36,17 @@ const storiesReducer = (state, action) => {
       throw new Error();
   }
 };
-
 const useStorageState = (key, initialState) => {
   const isMounted = React.useRef(false);
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState,
   );
 
-
   React.useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
     } else {
-      console.log("a")
       localStorage.setItem(key, value);
-
     }
   }, [value, key]);
 
@@ -61,23 +57,20 @@ const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState("search", "React");
-
   const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`);
-
   const [urls, setUrls] = React.useState([]);
-
-
   const [stories, dispatchStories] = React.useReducer(storiesReducer, {
     data: [],
     isLoading: false,
     isError: false,
   });
+  const [page, setPage] = React.useState(0);
 
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
 
     try {
-      const result = await axios.get(url, {
+      const result = await axios.get(`${url}&page=${page}`, {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
@@ -86,12 +79,12 @@ const App = () => {
 
       dispatchStories({
         type: "STORIES_FETCH_SUCCESS",
-        payload: result.data.hits,
+        payload: [...stories.data, ...result.data.hits],
       });
     } catch {
       dispatchStories({ type: "STORIES_FETCH_FAILURE" });
     }
-  }, [url]);
+  }, [url, page]);
 
   React.useEffect(() => {
     handleFetchStories();
@@ -104,13 +97,9 @@ const App = () => {
     });
   };
 
-
-
   const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
   };
-
-
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -122,6 +111,11 @@ const App = () => {
     });
 
     setUrl(newUrl);
+    setPage(0); // Reset page to 0 for a new search
+  };
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
   return (
@@ -142,9 +136,13 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading ...</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+        <>
+          <List list={stories.data} onRemoveItem={handleRemoveStory} />
+          <button onClick={handleLoadMore}>Load More</button>
+        </>
       )}
     </StyledContainer>
+
   );
 };
 const SearchHistoryButtons = ({ urls, setUrl }) => {
